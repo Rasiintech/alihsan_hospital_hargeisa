@@ -18,7 +18,6 @@
   "sales_order",
   "source_order",
   "district",
-  "medical_plan",
   "membership_no",
   "refered_by",
   "refered_from",
@@ -428,14 +427,6 @@
    "read_only": 1
   },
   {
-   "fetch_from": "patient.medical_plan",
-   "fieldname": "medical_plan",
-   "fieldtype": "Link",
-   "label": "Medical Plan",
-   "options": "Medical Plan",
-   "read_only": 1
-  },
-  {
    "fetch_from": "patient.membership_no",
    "fieldname": "membership_no",
    "fieldtype": "Data",
@@ -451,7 +442,7 @@
    "link_fieldname": "patient"
   }
  ],
- "modified": "2025-10-28 14:20:16.669973",
+ "modified": "2025-11-23 09:46:02.179425",
  "modified_by": "Administrator",
  "module": "HIS",
  "name": "Que",
