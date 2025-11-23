@@ -1,0 +1,234 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "Daily-C-.#####",
+ "creation": "2024-08-08 12:03:03.885620",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "user_name",
+  "column_break_iwqm1",
+  "date",
+  "section_break_a6fxp",
+  "accounts",
+  "section_break_60ts2",
+  "account",
+  "column_break_zxoe7",
+  "balance",
+  "column_break_ij7jd",
+  "total",
+  "column_break_hacma",
+  "difference",
+  "section_break_l0xam",
+  "commissions",
+  "section_break_lx84x",
+  "h",
+  "column_break_iyjdh",
+  "c_balance",
+  "column_break_mnj2i",
+  "c_total",
+  "section_break_fl0bn",
+  "details"
+ ],
+ "fields": [
+  {
+   "default": "User",
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "User",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "user.full_name",
+   "fieldname": "user_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "User Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "accounts",
+   "fieldtype": "Table",
+   "label": "Accounts",
+   "options": "Cashiers Account Entery",
+   "reqd": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_standard_filter": 1,
+   "label": "Date"
+  },
+  {
+   "fieldname": "column_break_iwqm1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_a6fxp",
+   "fieldtype": "Section Break",
+   "label": "Daily Cash"
+  },
+  {
+   "fieldname": "section_break_60ts2",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_zxoe7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ij7jd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total",
+   "fieldtype": "Currency",
+   "label": "Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_l0xam",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "Daily Commissions"
+  },
+  {
+   "fieldname": "details",
+   "fieldtype": "Text",
+   "label": "Comment"
+  },
+  {
+   "fieldname": "account",
+   "fieldtype": "Data",
+   "label": "Account",
+   "read_only": 1
+  },
+  {
+   "fieldname": "balance",
+   "fieldtype": "Currency",
+   "label": "Account Balance",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_hacma",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "difference",
+   "fieldtype": "Currency",
+   "label": "Difference",
+   "read_only": 1
+  },
+  {
+   "fieldname": "commissions",
+   "fieldtype": "Table",
+   "label": "Commissions",
+   "options": "Commission Detail"
+  },
+  {
+   "fieldname": "section_break_lx84x",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "h",
+   "fieldtype": "Data",
+   "label": "h",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_iyjdh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_mnj2i",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "c_total",
+   "fieldtype": "Currency",
+   "label": "Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "c_balance",
+   "fieldtype": "Currency",
+   "label": "Commision Balance",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_fl0bn",
+   "fieldtype": "Section Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-10-19 09:18:34.556368",
+ "modified_by": "Administrator",
+ "module": "HIS",
+ "name": "Daily Closing",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "if_owner": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Cashier",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "if_owner": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Pharmacy",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Main Cashier",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
