@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "VA-.#####",
  "creation": "2024-09-19 08:53:50.957498",
  "default_view": "List",
  "doctype": "DocType",
@@ -189,10 +190,11 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-18 18:36:30.539001",
+ "modified": "2025-11-23 10:38:04.645920",
  "modified_by": "Administrator",
  "module": "HIS",
  "name": "VA Examination",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

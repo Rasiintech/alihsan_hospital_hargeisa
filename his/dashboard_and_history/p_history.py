@@ -5,6 +5,7 @@ def get_p_histy(patient = ""):
     
     # frappe.msgprint(patient)
     vitals = vitals_h(patient)
+    va = va_h(patient)
     visits = visits_h(patient)
     labs = lab_h(patient)
     med = medic_h(patient)
@@ -32,9 +33,9 @@ def get_p_histy(patient = ""):
     # docplan  = doc_plan(patient)
 
     
-    all_his =  [visits , vitals , labs , med , comp , diag , imaging , vitals_cur , labs_today ,images , drug_sheet , doctor_progress_note , nursing_progress_note, doctor_plan  , lab_prescription,drug_pres , operation , blood_transfusion, dental_plan]
+    all_his =  [visits , vitals , va, labs , med , comp , diag , imaging , vitals_cur , labs_today ,images , drug_sheet , doctor_progress_note , nursing_progress_note, doctor_plan  , lab_prescription,drug_pres , operation , blood_transfusion, dental_plan]
     data = {}
-    all_his_key =  ["visits" , "vitals" , "labs" , "med" , "comp" , "diag" , "imaging" , "vitals_cur" , "labs_today" ,"images" ,"drug_sheet" , "doctor_progress_note" , "nursing_progress_note", "doctor_plan" , "lab_prescription","drug_pres" , "operation" ,  "blood_transfusion", "dental_plan"]
+    all_his_key =  ["visits" , "vitals" , "va", "labs" , "med" , "comp" , "diag" , "imaging" , "vitals_cur" , "labs_today" ,"images" ,"drug_sheet" , "doctor_progress_note" , "nursing_progress_note", "doctor_plan" , "lab_prescription","drug_pres" , "operation" ,  "blood_transfusion", "dental_plan"]
     columns = {}
     for   index , history in enumerate(all_his):
         # frappe.errprint(history)
@@ -213,12 +214,14 @@ def vitals_h(patient , curr_date = False):
     select name as sr,   signs_date  as Date, 
     signs_time as Time ,
             temperature as Tem, pulse  as Pulse,
-        bp_systolic as 'BP systolic', bp_diastolic as 'BP Diastolic',respiratory_rate as RR,
-         spo as SPO2,
-                       
+        bp as 'Blood Pressure',respiratory_rate as RR,
+         spo as SPO2,       
          blood_sugar as `Blood Sugar`,
          height as Height,
          weight as Weight,  
+         bmi as BMI,
+         nutrition_note as Note,
+
        owner as `Nurse`
         from `tabVital Signs` where patient ='{patient}' {condition} Order by modified desc
    
@@ -243,6 +246,29 @@ def visits_h(patient ):
 
     from `tabQue`  
       where patient = "{patient}"
+    
+    """ , as_dict = True)
+    return data
+@frappe.whitelist()
+def va_h(patient ):
+    #  appointment_date  as Date,
+    data = frappe.db.sql(f""" 
+    
+    select  
+    name as sr, 
+    date as Date,
+    time  as `Time`,
+    va as `R VA`,
+    pin_hole as `R Pin Hole`,
+    white_glass as `R White Class`,
+    va1 as `L VA`,
+    pin2 as `L Pin Hole`,
+    glass2 as `L White Class`
+
+   
+
+    from `tabVA Examination`  
+      where patient = "{patient}" and docstatus !=2
     
     """ , as_dict = True)
     return data

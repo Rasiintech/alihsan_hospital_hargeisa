@@ -208,6 +208,7 @@ d.show();
     onload_post_render(frm){
         setTimeout(() => {
             get_history(frm.doc.patient , "vitals")
+            get_history(frm.doc.patient , "va")
             get_history(frm.doc.patient , "labs")
             
         }, 1000);

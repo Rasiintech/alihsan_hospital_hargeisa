@@ -195,45 +195,7 @@ if(frappe.user_roles.includes("Doctor")){
 
 }
 // ------------------------------------------------------------------------------------------------
-if(frappe.user_roles.includes("Dental")){
-    btn = {
-        type : "btn",
-        color : "success",
-        status : ['Open'],
-        show: function(doc) {
-            if(doc.status == "Canceled"){
-                return false
-            }
-            return true;
-        },
-        get_label: function() {
-            return __('Open Dental');
-        },
-        get_description: function(doc) {
-            return __('Print {0}', [doc.name])
-        },
-        action: function(doc) {
-            if(doc.patient_encounter){
-                // frappe.call({
-                //     method: "his.api.steps.pre", //dotted path to server method
-                //     args: {
-                //         "docname":doc.name
-                //     },
-                //     callback: function(r) {
-                //     }
-                //     });
-                frappe.set_route('Form', 'Dental', doc.name);
 
-            }else{
-                frappe.new_doc("Dental",{"que": doc.name, "patient": doc.patient,"practitioner" : doc.practitioner,}) 
-            }
-            frappe.db.set_value("Que" , doc.name , "que_steps" , "Called")
-            // doc.save()
-                                          
-        }
-    }
-
-}
 // -------------------------------------------------------------------------------------------------
 if(frappe.user_roles.includes("Optometrist")){
     btn = {
@@ -304,105 +266,45 @@ if(frappe.user_roles.includes("Nurse")){
 
 }
 
-if(frappe.user_roles.includes("OBS")){
+// if(frappe.user_roles.includes("OBS")){
    
-    btn = {
-        type : "btn",
-        color : "success",
-        status : ['Open'],
-        show: function(doc) {
-            if(doc.status == "Canceled"){
-                return false
-            }
-            return true;
-        },
-        get_label: function() {
-            return __('Open');
-        },
-        get_description: function(doc) {
-            return __('Print {0}', [doc.name])
-        },
-        action: function(doc) {
-            if(doc.type == "GYN"){
+//     btn = {
+//         type : "btn",
+//         color : "success",
+//         status : ['Open'],
+//         show: function(doc) {
+//             if(doc.status == "Canceled"){
+//                 return false
+//             }
+//             return true;
+//         },
+//         get_label: function() {
+//             return __('Open');
+//         },
+//         get_description: function(doc) {
+//             return __('Print {0}', [doc.name])
+//         },
+//         action: function(doc) {
+//             if(doc.type == "GYN"){
                 
-                frappe.new_doc("GYN",{ "patient": doc.patient,"practitioner" : doc.practitioner, "que":doc.name}) 
+//                 frappe.new_doc("GYN",{ "patient": doc.patient,"practitioner" : doc.practitioner, "que":doc.name}) 
 
-            }
-            else{
-                frappe.new_doc("OBS",{ "patient": doc.patient,"practitioner" : doc.practitioner,"que":doc.name}) 
+//             }
+//             else{
+//                 frappe.new_doc("OBS",{ "patient": doc.patient,"practitioner" : doc.practitioner,"que":doc.name}) 
 
-            }
-            frappe.db.set_value("Que" , doc.name , "que_steps" , "Called")
+//             }
+//             frappe.db.set_value("Que" , doc.name , "que_steps" , "Called")
          
                
           
-    }
+//     }
 
-}}
-
-
-if(frappe.user_roles.includes("General Surgery")){
-   
-    btn = {
-        type : "btn",
-        color : "success",
-        status : ['Open'],
-        show: function(doc) {
-            if(doc.status == "Canceled"){
-                return false
-            }
-            return true;
-        },
-        get_label: function() {
-            return __('Open');
-        },
-        get_description: function(doc) {
-            return __('Print {0}', [doc.name])
-        },
-        action: function(doc) {
-          
-                frappe.new_doc("General Surgery",{ "patient": doc.patient,"practitioner" : doc.practitioner,"que":doc.name}) 
-
-            
-            frappe.db.set_value("Que" , doc.name , "que_steps" , "Called")
-         
-               
-          
-    }
-
-}}
+// }}
 
 
-if(frappe.user_roles.includes("ENT")){
-   
-    btn = {
-        type : "btn",
-        color : "success",
-        status : ['Open'],
-        show: function(doc) {
-            if(doc.status == "Canceled"){
-                return false
-            }
-            return true;
-        },
-        get_label: function() {
-            return __('Open');
-        },
-        get_description: function(doc) {
-            return __('Print {0}', [doc.name])
-        },
-        action: function(doc) {
-          
-                frappe.new_doc("ENT",{ "patient": doc.patient,"practitioner" : doc.practitioner,"que":doc.name}) 
 
-            
-            frappe.db.set_value("Que" , doc.name , "que_steps" , "Called")
-         
-               
-          
-    }
 
-}}
 
 frappe.listview_settings['Que'] = {
 

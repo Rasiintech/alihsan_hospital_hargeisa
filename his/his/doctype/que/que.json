@@ -434,15 +434,21 @@
    "read_only": 1
   }
  ],
+ "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [
   {
-   "group": "E.R",
-   "link_doctype": "Emergency",
+   "group": "VA",
+   "link_doctype": "VA Examination",
+   "link_fieldname": "patient"
+  },
+  {
+   "group": "Vital Signs",
+   "link_doctype": "Vital Signs",
    "link_fieldname": "patient"
   }
  ],
- "modified": "2025-11-23 09:46:02.179425",
+ "modified": "2025-11-23 11:04:35.451329",
  "modified_by": "Administrator",
  "module": "HIS",
  "name": "Que",
