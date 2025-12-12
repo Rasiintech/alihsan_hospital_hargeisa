@@ -94,7 +94,7 @@ frappe.query_reports["Custom Account Receivable Summary"] = {
 			"label": __("Customer Group"),
 			"fieldtype": "Link",
 			"options": "Customer Group",
-			"hidden":1
+			"hidden":0
 		},
 		
 		{

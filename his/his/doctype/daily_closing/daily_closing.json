@@ -14,22 +14,18 @@
   "date",
   "section_break_a6fxp",
   "accounts",
+  "section_break_lstwm",
+  "be",
+  "column_break_bpafn",
+  "total",
   "section_break_60ts2",
+  "shilling_accounts",
+  "section_break_bdysj",
   "account",
   "column_break_zxoe7",
   "balance",
   "column_break_ij7jd",
-  "total",
-  "column_break_hacma",
-  "difference",
-  "section_break_l0xam",
-  "commissions",
-  "section_break_lx84x",
-  "h",
-  "column_break_iyjdh",
-  "c_balance",
-  "column_break_mnj2i",
-  "c_total",
+  "total_shilling",
   "section_break_fl0bn",
   "details"
  ],
@@ -41,6 +37,7 @@
    "hidden": 1,
    "label": "User",
    "options": "User",
+   "print_hide": 1,
    "read_only": 1
   },
   {
@@ -55,7 +52,7 @@
   {
    "fieldname": "accounts",
    "fieldtype": "Table",
-   "label": "Accounts",
+   "label": "USD Accounts",
    "options": "Cashiers Account Entery",
    "reqd": 1
   },
@@ -90,14 +87,8 @@
   {
    "fieldname": "total",
    "fieldtype": "Currency",
-   "label": "Total",
+   "label": "Total USD",
    "read_only": 1
-  },
-  {
-   "fieldname": "section_break_l0xam",
-   "fieldtype": "Section Break",
-   "hidden": 1,
-   "label": "Daily Commissions"
   },
   {
    "fieldname": "details",
@@ -117,59 +108,43 @@
    "read_only": 1
   },
   {
-   "fieldname": "column_break_hacma",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "difference",
-   "fieldtype": "Currency",
-   "label": "Difference",
-   "read_only": 1
-  },
-  {
-   "fieldname": "commissions",
-   "fieldtype": "Table",
-   "label": "Commissions",
-   "options": "Commission Detail"
-  },
-  {
-   "fieldname": "section_break_lx84x",
+   "fieldname": "section_break_fl0bn",
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "h",
+   "fieldname": "shilling_accounts",
+   "fieldtype": "Table",
+   "label": "Shilling Accounts",
+   "options": "Shilling Cashiers Account Entery"
+  },
+  {
+   "fieldname": "section_break_bdysj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_bpafn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_shilling",
+   "fieldtype": "Float",
+   "label": "Total Shilling",
+   "read_only": 1
+  },
+  {
+   "fieldname": "be",
    "fieldtype": "Data",
-   "label": "h",
+   "label": "be",
    "read_only": 1
   },
   {
-   "fieldname": "column_break_iyjdh",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "column_break_mnj2i",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "c_total",
-   "fieldtype": "Currency",
-   "label": "Total",
-   "read_only": 1
-  },
-  {
-   "fieldname": "c_balance",
-   "fieldtype": "Currency",
-   "label": "Commision Balance",
-   "read_only": 1
-  },
-  {
-   "fieldname": "section_break_fl0bn",
+   "fieldname": "section_break_lstwm",
    "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-19 09:18:34.556368",
+ "modified": "2025-12-12 15:09:04.485754",
  "modified_by": "Administrator",
  "module": "HIS",
  "name": "Daily Closing",
