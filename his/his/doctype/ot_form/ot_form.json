@@ -10,9 +10,13 @@
  "field_order": [
   "patient",
   "patient_name",
+  "procedure_name",
+  "amount",
   "column_break_ip7fw",
-  "date",
   "sex",
+  "mobile",
+  "date",
+  "doctor",
   "drugs_used_anaesthesis_drugs_and_iv_fluids_section",
   "drug",
   "supplies_used_sutures_gloves_cathelers_tubes_and_etc_section",
@@ -23,6 +27,7 @@
    "fieldname": "patient",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Patient",
    "options": "Patient",
    "reqd": 1
@@ -33,7 +38,8 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Patient Name"
+   "label": "Patient Name",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_ip7fw",
@@ -43,13 +49,15 @@
    "default": "Today",
    "fieldname": "date",
    "fieldtype": "Date",
+   "in_standard_filter": 1,
    "label": "Date"
   },
   {
    "fetch_from": "patient.sex",
    "fieldname": "sex",
    "fieldtype": "Data",
-   "label": "Sex"
+   "label": "Sex",
+   "read_only": 1
   },
   {
    "fieldname": "drugs_used_anaesthesis_drugs_and_iv_fluids_section",
@@ -72,11 +80,37 @@
    "fieldtype": "Table",
    "label": "Other Service",
    "options": "Ot prescription"
+  },
+  {
+   "fieldname": "procedure_name",
+   "fieldtype": "Data",
+   "label": "Procedure Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "doctor",
+   "fieldtype": "Link",
+   "label": "Doctor",
+   "options": "Healthcare Practitioner",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "patient.mobile_no",
+   "fieldname": "mobile",
+   "fieldtype": "Data",
+   "label": "Mobile",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-20 11:09:39.786230",
+ "modified": "2026-04-07 06:55:28.783899",
  "modified_by": "Administrator",
  "module": "HIS",
  "name": "OT Form",

@@ -33,6 +33,7 @@
   "total_amount",
   "is_membership",
   "discount_level",
+  "mode_of_payment",
   "discount",
   "paid_amount",
   "is_free",
@@ -274,6 +275,7 @@
    "fieldname": "practitioner",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Practitioner",
    "options": "Healthcare Practitioner",
    "reqd": 1
@@ -432,6 +434,13 @@
    "fieldtype": "Data",
    "label": "Membership No",
    "read_only": 1
+  },
+  {
+   "fieldname": "mode_of_payment",
+   "fieldtype": "Link",
+   "label": "Mode of Payment",
+   "options": "Mode of Payment",
+   "set_only_once": 1
   }
  ],
  "hide_toolbar": 1,
@@ -448,7 +457,7 @@
    "link_fieldname": "patient"
   }
  ],
- "modified": "2025-11-23 11:04:35.451329",
+ "modified": "2026-04-20 09:16:06.849105",
  "modified_by": "Administrator",
  "module": "HIS",
  "name": "Que",

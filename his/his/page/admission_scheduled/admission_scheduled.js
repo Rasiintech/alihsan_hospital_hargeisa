@@ -20,114 +20,75 @@ IPD = Class.extend(
 				// alert("in realtime")
 				myf_ads.setupdata_table()
 					})
-			// this.grouping_cols()
 		},
 		make:function(){
-
-		
 			let me_s = this
-			// let date = this.page.add_field({
-			// 	fieldtype: 'Date',
-			
-			// 	fieldname: 'date',
-			// 	label : "Date",
-			// 	default: frappe.datetime.get_today(),
-				
-				
-			// 	change: () => {
-			// 		// alert()
-			// 		this.currDate = date.get_value()
-			// 		me.setupdata_table()
-			// 		// me.curMonth = field.get_value()
-			// 		// me.setup_datatable()
-			// 	}
-			// });
-   		
-   		
 			$(frappe.render_template(frappe.dashbard_page.body, me_s)).appendTo(me_s.page.main)
-
-
-
-
+		},
+		make_grouping_btn:function(){
+		let listitmes_ad_sc = ''
+			
+				$(`<div class="mt-2 sort-selector">
+				
+	
+	
+	
+				<button type="button" class="btn btn-primary" onclick="add_inpatient()">Add New<b class="caret"></b></a>
+				</button>
+				<ul class="dropdown-menu">
+				${listitmes_ad_sc}
+			</ul>
+				</div>`).appendTo('.page-head')
+			
+			// this.group_by_control = new frappe.ui.GroupBy(this);
 		
 		},
+
 
 		setupdata_table : function(gr_ref){
 			
 		let tbldata = []
 		frappe.db.get_list('Inpatient Record', {
-			fields: ['name','patient','patient_name', 'room' , 'type' , 'status' ,'scheduled_date' , 'admission_practitioner', 'diagnose'],
+			fields: ['name','patient','patient_name', 'room' , 'type' , 'status' ,'scheduled_date' , 'admission_practitioner', 'diagnose', "sales_invoice"],
 			filters: {
 				status: 'Admission Scheduled'
 			},
 			limit : 1000
 		}).then(r => {
-			// console.log(r)
 			
-            // code snippet
-            // $(frappe.render_template(frappe.render_template('dashboard_page' ,{"data" : r.message }), me)).appendTo(me.page.main)
 			tbldata = r
-        // console.log(r)
-   
-
-			// let doct ='Sales Order'.replace(' ' , '-').toLowerCase()
-		
-	
-		//  let fields = frappe.get_meta("Sales Order").fields
 		 	columns = [
-			// {title:"ID", field:"name"},
-			// {title:"Patient", field:"customer"},
+			// {title:"SN", field:"name"},
 			{title:"PID", field:"patient" ,  headerFilter:"input"},
 			{title:"Patient Name", field:"patient_name" ,  headerFilter:"input"},
 			{title:"Date", field:"scheduled_date" ,  headerFilter:"input"},
 			{title:"Doctor Name", field:"admission_practitioner" ,  headerFilter:"input",},
-			// {title:"Room", field:"room" ,  headerFilter:"input",},
-			
 			{title:"Type", field:"type" ,  headerFilter:"input",},
 			{title:"Status", field:"status" ,  headerFilter:"input",},
 			{title:"Diagnosis", field:"diagnose" ,  headerFilter:"input",},
-			
-
 			{title:"Action", field:"action", hozAlign:"center" , formatter:"html"},
 			
 		 ]
-		//  fields.forEach(field => {
-		// 	if(field.in_list_view){
-		// 		columns.push(
-		// 			{title:field.label, field:field.fieldname}
-		// 		)
-		// 	}
-		//  })
-		// if(!gr_ref){
-		// 	columns.unshift(
-		// 		// {formatter:"responsiveCollapse", width:30, minWidth:30, hozAlign:"center", resizable:false, headerSort:false},
-    
-		// 		{formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"left", headerSort:false, checked:function(e, cell){
-		// 			// cell.getRow().toggleSelect();
-		// 			// alert("ok 2")
-		// 			me.toggle_actions_menu_button(true);
-		// 		  }}
-		// 	)
-			
-			
-			
-
-		// }
-		// console.log("this is ",doctype)
-		// let list_btns = frappe.listview_settings[`Sales Invoice`]
-		// tbldata = tbldata[0]['action'] = "Button"
 		let new_data_ad_s = []
-		// if(list_btns)
-		// console.log(tbldata)
 		tbldata.forEach(row => {
-			// console.log(row.status)
-			// if(row.status === "To Deliver and Bill"){
-			// 	row.status = "To Bill"
-
-			// }
-			// console.log("this is ",row.per_billed)
 			let btnhml = ''
-			// if(row.status !== "Draft" && row.status !== "Cancelled" && row.status!= "Completed" ){
+			if(!row.sales_invoice){
+				btnhml += `
+				<button class='btn btn-warning ml-2' style='color:white' onclick = "make_payment('${row.name}','${row.patient }', '${row.admission_practitioner}' )"> Make Payment</button>
+				`
+			}
+
+			if (row.sales_invoice) {
+				frappe.db.get_value("Sales Invoice", row.sales_invoice, "docstatus")
+					.then(r => {
+						// console.log(r.message.docstatus)
+						if (r.message && r.message.docstatus != 1) {
+							btnhml += `
+							<button class='btn btn-warning ml-2' style='color:white' onclick = "make_payment('${row.name}','${row.patient }', '${row.admission_practitioner}' )"> Make Payment</button>
+							`
+						}
+					});
+			}
 			
 			btnhml += `
 			<button class='btn btn-primary ml-2' onclick = "admit('${row.name}','${row.patient }', '${row.admission_practitioner }')"> Admit</button>
@@ -135,36 +96,13 @@ IPD = Class.extend(
 		
 			
 			`
-			// }
-			// else{
-			// 	btnhml += `
-			// 	<div style="height: 100px; background-color: rgba(255,255,250);"> </div>
-		
-			
-			// `
-
-			// }
-			// list_btns.forEach(btn => {
-			// 	btnhml += `<button class='btn btn-primary' > ${btn.get_label()}</button>`
-			// })
-			// for (const key in list_btns) {
-
-			// 	if (list_btns.hasOwnProperty(key) && list_btns[key].type == "btn") {
-			
-			// 		// console.log(`${key}: ${btn[key].get_label()}`);
-			// 		btnhml += `<button class='btn btn-${list_btns[key].color} ml-2' onclick = ""> ${list_btns[key].get_label()}</button>`
-			// 	}
-			// }
 			row['action'] = btnhml
 			new_data_ad_s.push(row)
 		})
 		// console.log(columns)
 this.table = new Tabulator("#ad_sche", {
 			layout:"fitDataFill",
-			// layout:"fitDataStretch",
-			//  layout:"fitColumns",
-			// responsiveLayout:"collapse",
-			 rowHeight:30, 
+			rowHeight:30, 
 			//  selectable:true,
 			//  dataTree:true,
 			//  dataTreeStartExpanded:true,
@@ -185,143 +123,14 @@ this.table = new Tabulator("#ad_sche", {
 			//  groupBy:groupbyD.length >0 ? groupbyD : "",
 			 textDirection: frappe.utils.is_rtl() ? "rtl" : "ltr",
 	 
-			 columns: columns,
-			 
-			 // [
-			 // 	{formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, cellClick:function(e, cell){
-			 // 		cell.getRow().toggleSelect();
-			 // 	  }},
-			 // 	{
-			 // 		title:"Name", field:"name", width:200,
-			 // 	},
-			 // 	{title:"Group", field:"item_group", width:200},
-			 // ],
-			 // [
-			 // {title:"Name", field:"name" , formatter:"link" , formatterParams:{
-			 // 	labelField:"name",
-			 // 	urlPrefix:`/app/${doct}/`,
-				 
-			 // }},
-			 // {title:"Customer", field:"customer" },
-			 // {title:"Total", field:"net_total" , bottomCalc:"sum",},
-		 
-			 // ],
-			 
+			 columns: columns,			 
 			 data: new_data_ad_s
 		 });
-		 
-		 //  table.getSelectedData(); 
-		
-		//  this.table.on("rowClick", function(e ,rows){
-		// 	 let selectedRows = row.table.getSelectedRows(); 
-		// 	 // console.log(rows._row.data)
-		// 	//  console.log(row.table.getSelectedData())
-		// 	//  row.toggle_actions_menu_button(row.table.getSelectedData().length > 0);
-		// 	 frappe.set_route("Form" , doct , rows._row.data.name)
-		// 	 // document.getElementById("select-stats").innerHTML = data.length;
-		//    });
-		//    $(document).ready(function() {
-		// 	$('.tabulator input[type="checkbox"]').change(function() {
-		// 	//   alert ("The element with id " + this.id + " changed.");
-		// 	row.toggle_actions_menu_button(row.table.getSelectedData().length > 0);
-		//   });
-		  
-		// 	});
-		
-	
-});
+	});
 		},
 
-
-		make_grouping_btn:function(){
-			let listitmes_ad_sc = ''
-			
-			
-			let columns = [
-				{title:"ID", field:"name"},
-				{title:"Customer", field:"customer"},
-				{title:"Customer Name", field:"customer"},
-			
-		 ]
-				columns.forEach(field => {
-					// console.log(field)
-					// if(field.docfield.fieldtype !== "Currency"){
-						listitmes_ad_sc += `
- 
-						<li>
-						<input type="checkbox" class="form-check-input groupcheck ml-2"  value = '${field.field}' >
-						<label class="form-check-label" for="exampleCheck1">${field.title}</label>
-						
-					</li>	
-						
-						`
+	},
 	
-					// }
-				
-	  
-				
-			})
-			$('.page-heade')
-			// 	<button type="button" class="btn btn-default btn-sm" data-toggle="dropdown">
-			// 	<span class="dropdown-text">Grouping by</span>
-			// 	<ul class="dropdown-menu dropdown-menu-right">
-				
-					
-			// 		${listitmes_ad_sc}
-			// 	</ul>
-			// </button>
-				$(`<div class="mt-2 sort-selector">
-				
-	
-	
-	
-				<button type="button" class="btn btn-primary" onclick="add_inpatient()">Add New<b class="caret"></b></a>
-				</button>
-				<ul class="dropdown-menu">
-				${listitmes_ad_sc}
-			</ul>
-				</div>`).appendTo('.page-head')
-			
-			// this.group_by_control = new frappe.ui.GroupBy(this);
-		
-		},
-
-		grouping_cols:function(){
-		
-			let me_set = this
-			$('.groupcheck').change(function() {
-				// alert ("The element with id " + this.value + " changed.");
-				let value = this.value
-				if(this.checked) {
-				groupbyD.push(this.value)
-				}
-				else{
-					groupbyD = groupbyD.filter(function(e) { return e !== value })
-				}
-				me_set.setupdata_table(true);
-				// setup_datatable()
-				
-			});
-	
-		   
-		},
-
- make_sales_invoice : function(source_name) {
-	alert("ok ok")
-	frappe.model.open_mapped_doc({
-		method: "his.api.make_invoice.make_sales_invoice",
-		source_name: source_name
-	})
-},
-
-
- make_credit_invoice : function(source_name) {
-	frappe.model.open_mapped_doc({
-		method: "his.api.make_invoice.make_credit_invoice",
-		source_name: source_name
-	})
-}
-	}
 
 	
 )
@@ -344,75 +153,9 @@ frappe.dashbard_page = {
 	body : ScheduleAd
 }
 
-get_history = function(patient , patient_name){
-	alert(patient)
-
-	// frappe.route_options = { "patient" : patient };
-	// frappe.set_route('view-vital-signs');
-	frappe.set_route('Form', 'Patient History', { patient: "PID-00265" });
-
-
-}
 formatter = function(cell, formatterParams, onRendered){
 			return frappe.datetime.prettyDate(cell.getValue() , 1)
 		}
-
-
-
-credit_sales = function(source_name){
-	frappe.db.get_doc("Sales Order" , source_name)
-	.then(r => {
-		console.log(r)
-		frappe.db.get_value("Customer" , r.customer , "allow_credit")
-		.then(cu => {
-			if(!cu.message.allow_credit){
-				frappe.throw(__('Bukaan looma ogala dayn'))
-			}
-			else{
-
-				frappe.call({
-					method: "erpnext.accounts.utils.get_balance_on",
-					args: {
-						company: frappe.defaults.get_user_default("Company"),
-						party_type: "Customer",
-						party: r.customer,
-						date: get_today(),
-					},
-					callback: function(balance) {
-						// alert(r.customer)
-						frappe.db.get_doc("Customer" , r.customer)
-						.then(customer => {
-							
-							if(balance.message >= customer.credit_limits[0].credit_limit) {
-								// alert(r.message)
-							// frm.set_value("patient_balance", r.message)
-							frappe.throw(__('Bukaankaan Wuu Dhaafay Xadka daynta loo ogolyahay'))
-							}
-							else{
-								frappe.model.open_mapped_doc({
-									method: "his.api.make_invoice.make_credit_invoice",
-									source_name: source_name
-								})
-
-							}
-
-						})
-						
-					}
-				});
-
-
-				
-
-			}
-		})
-
-	})
-	
-
-}
-
-
 
 function cancel_admision(inpatient_record, patient){
 	frappe.confirm('Are you sure you want to Cancelled?',
@@ -508,6 +251,9 @@ function admit_p(inpatient_record, bed,patient_name, practitioner, type){
 	})
 
 }
+
+	
+		
 
 
 function add_inpatient(){
@@ -616,3 +362,109 @@ function add_inpatient(){
 	d.show();
 				 
 } 
+
+
+function make_payment(inpatient_record, patient, practitioner){
+	
+    	let d = new frappe.ui.Dialog({
+		title: 'Enter details',
+		fields: [
+			{
+	fieldtype: 'Link',
+	label: 'Room',
+	fieldname: 'room',
+	options: 'Healthcare Service Unit Type',
+	reqd: 1,
+	change: function () {
+		let room = d.get_value('room');
+
+				if (room) {
+					frappe.db.get_value(
+						'Healthcare Service Unit Type',
+						room,
+						['item', 'rate']
+					).then(r => {
+						if (r.message) {
+							d.set_value('item_code', r.message.item || '');
+							d.set_value('rate', r.message.rate || 0);
+						}
+					});
+				}
+			}
+		},
+			{fieldtype: 'Link', label: 'Item', fieldname: 'item_code', options: 'Item',  fetch_from : "room.item",  read_only: 1},
+			{fieldtype: 'Link', label: 'Rate', fieldname: 'rate', fetch_from : "room.rate",  read_only: 1},
+			{fieldtype: 'Link', label: 'Bed', fieldname: 'bed', options: 'Healthcare Service Unit', reqd: 1},
+			{fieldtype: 'Link', label: 'Additional Bed', fieldname: 'bed2', options: 'Healthcare Service Unit', reqd: 0, "hidden": 1},
+			// {fieldtype: 'Datetime', label: 'Check In', fieldname: 'check_in', reqd: 1, default: frappe.datetime.now_datetime()}
+			   
+	
+		],
+		primary_action_label: 'Make Invoice',
+		primary_action(values) {
+			let company = frappe.defaults.get_default("company");
+
+			frappe.db.get_doc("Item", values.item_code).then(item => {
+				let income_account = "";
+
+				// 1. Check Item Default Income Account
+				if (item.item_defaults && item.item_defaults.length) {
+					let item_default = item.item_defaults.find(d => d.company === company);
+					if (item_default && item_default.income_account) {
+						income_account = item_default.income_account;
+					}
+				}
+
+				// 2. If not found, get Company Default Income Account
+				let income_account_promise = income_account
+					? Promise.resolve(income_account)
+					: frappe.db.get_value("Company", company, "default_income_account")
+						.then(r => r.message.default_income_account || "");
+
+				income_account_promise.then(final_income_account => {
+					frappe.new_doc("Sales Invoice", {
+						patient: patient,
+						ref_practitioner: practitioner,
+						inpatient_admit: inpatient_record,
+						company: company
+					}, function(doc) {
+						doc.items = [];
+
+						let row = frappe.model.add_child(doc, "items");
+						row.item_code = values.item_code;
+						row.item_name = values.item_code;
+						row.uom = "Nos";
+						row.description = values.bed;
+						row.qty = 1;
+						row.rate = values.rate || 0;
+						row.income_account = final_income_account;
+					});
+				});
+			});
+
+			d.hide();
+		}
+	});
+		d.fields_dict['room'].get_query = function(){
+		return {
+			filters: {
+				'inpatient_occupancy': 1,
+				'Type':"IPD"
+			}
+		};
+	};
+
+	d.fields_dict['bed'].get_query = function(){
+		return {
+			filters: {
+				'inpatient_occupancy': 1,
+				'service_unit_type':d.get_value('room'),
+				"occupancy_status": "Vacant"
+			}
+		};
+	};
+	
+	d.show();
+
+
+}

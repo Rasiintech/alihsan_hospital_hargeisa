@@ -117,6 +117,14 @@ after_install = "his.setup.install.after_install"
 #   "Event": "frappe.desk.doctype.event.event.has_permission",
 # }
 
+permission_query_conditions = {
+    "Task": "his.api.tasks_permissions.task_query"
+}
+
+has_permission = {
+    "Task": "his.api.tasks_permissions.task_has_permission"
+}
+
 # DocType Class
 # ---------------
 # Override standard doctype classes

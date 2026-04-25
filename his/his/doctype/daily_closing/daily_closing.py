@@ -17,14 +17,14 @@ class DailyClosing(Document):
 # 						date = getdate())
 
 @frappe.whitelist()
-def get_balance():
+def get_balance(date=getdate()):
 	pos_profile = get_pos_profile(frappe.defaults.get_user_default("company"))
 	mode_of_payment = frappe.db.get_value('POS Payment Method', {"parent": pos_profile.name},  'mode_of_payment')
 	account= frappe.get_doc("Mode of Payment", mode_of_payment)
 	acc= account.accounts[0].default_account
 	acc_balance=0
 	if acc:
-		acc_balance = get_balance_on(acc, date=getdate())
+		acc_balance = get_balance_on(acc, date=date)
 		
 	return acc_balance, acc
 @frappe.whitelist()

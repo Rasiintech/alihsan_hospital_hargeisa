@@ -97,9 +97,9 @@
   },
   {
    "fieldname": "account",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Account",
-   "read_only": 1
+   "options": "Account"
   },
   {
    "fieldname": "balance",
@@ -144,7 +144,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-12 15:09:04.485754",
+ "modified": "2026-03-02 17:34:13.374258",
  "modified_by": "Administrator",
  "module": "HIS",
  "name": "Daily Closing",

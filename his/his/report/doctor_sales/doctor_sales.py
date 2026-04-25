@@ -102,8 +102,7 @@ def _execute(filters, additional_table_columns=None, additional_query_columns=No
 		data[ref_practitioner]["grand_total"] += inv.base_grand_total
 		data[ref_practitioner]["rounded_total"] += inv.base_rounded_total
 		data[ref_practitioner]["outstanding_amount"] += inv.outstanding_amount
-		data[ref_practitioner]["cash"] = data[ref_practitioner]["net_total"] - data[ref_practitioner]["outstanding_amount"]  # Calculate the cash field
-		data[ref_practitioner]["user_full_name"]= frappe.db.get_value("User",inv.ref_practitioner,"full_name")
+		data[ref_practitioner]["cash"]  += inv.paid_amount
 	# Convert sets to comma-separated strings and prepare final data list
 	final_data = []
 	for ref_practitioner, row in data.items():
@@ -128,7 +127,7 @@ def get_columns(invoice_list, additional_table_columns):
 	columns += [
 	
 		
-		{"label": _("Doctor"), "fieldname": "ref_practitioner", "fieldtype": "Data", "width": 150},
+		{"label": _("Doctor"), "fieldname": "ref_practitioner", "fieldtype": "Data", "width": 300},
 	
 
 	]
@@ -198,7 +197,7 @@ def get_columns(invoice_list, additional_table_columns):
 				"fieldname": frappe.scrub(account + "_unrealized"),
 				"fieldtype": "Currency",
 				"options": "currency",
-				"width": 120,
+				"width": 150,
 			}
 		)
 
@@ -213,20 +212,7 @@ def get_columns(invoice_list, additional_table_columns):
 	]
 
 	total_columns = [
-		# {
-		# 	"label": _("Tax Total"),
-		# 	"fieldname": "tax_total",
-		# 	"fieldtype": "Currency",
-		# 	"options": "currency",
-		# 	"width": 120,
-		# },
-		# {
-		# 	"label": _("Grand Total"),
-		# 	"fieldname": "grand_total",
-		# 	"fieldtype": "Currency",
-		# 	"options": "currency",
-		# 	"width": 120,
-		# },
+	
 		{
 			"label": _("Cash"),
 			"fieldname": "cash",
@@ -322,7 +308,7 @@ def get_invoices(filters, additional_query_columns):
 		"""
 		select name, posting_date, debit_to, project, customer,
 		customer_name, ref_practitioner, remarks, territory, tax_id, customer_group,
-		base_net_total, base_grand_total, base_rounded_total, outstanding_amount,
+		base_net_total, base_grand_total, base_rounded_total, outstanding_amount, paid_amount,
 		is_internal_customer, represents_company, company {0}
 		from `tabSales Invoice`
 		where docstatus = 1 %s order by posting_date desc, name desc""".format(

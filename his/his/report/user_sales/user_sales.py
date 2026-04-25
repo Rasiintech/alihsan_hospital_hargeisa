@@ -104,7 +104,7 @@ def _execute(filters, additional_table_columns=None, additional_query_columns=No
 		data[owner]["grand_total"] += inv.base_grand_total
 		data[owner]["rounded_total"] += inv.base_rounded_total
 		data[owner]["outstanding_amount"] += inv.outstanding_amount
-		data[owner]["cash"] = data[owner]["net_total"] - data[owner]["outstanding_amount"]  # Calculate the cash field
+		data[owner]["cash"] += inv.paid_amount
 		data[owner]["user_full_name"]= frappe.db.get_value("User",inv.owner,"full_name")
 	# Convert sets to comma-separated strings and prepare final data list
 	final_data = []
@@ -210,7 +210,7 @@ def get_columns(invoice_list, additional_table_columns):
 			"fieldname": "net_total",
 			"fieldtype": "Currency",
 			"options": "currency",
-			"width": 120,
+			"width": 200,
 		}
 	]
 
@@ -324,7 +324,7 @@ def get_invoices(filters, additional_query_columns):
 		"""
 		select name, posting_date, debit_to, project, customer,
 		customer_name, owner, remarks, territory, tax_id, customer_group,
-		base_net_total, base_grand_total, base_rounded_total, outstanding_amount,
+		base_net_total, base_grand_total, base_rounded_total, outstanding_amount, paid_amount,
 		is_internal_customer, represents_company, company {0}
 		from `tabSales Invoice`
 		where docstatus = 1 %s order by posting_date desc, name desc""".format(
