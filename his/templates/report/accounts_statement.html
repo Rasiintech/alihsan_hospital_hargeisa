@@ -185,9 +185,13 @@
 <div class="print-format-gutter">
 		<div class="print-format" class="hidden-pdf">
 
-			<div id="header-html">
-			
-					<div class="letter-head"> <img src="/files/JSHLOGO.png"> </div>
+		<div id="header-html">
+			<div class="letter-head" style="text-align: center;">
+				<img
+				src="{{ frappe.db.get_value('Letter Head', {'is_default': 1}, 'image') }}"
+				style="display: inline-block; max-width: 100%; height: auto;"
+				>
+			</div>
 			</div>
 
 			<h2 class="text-center">{{ _("Account Statement") }}</h2>
@@ -242,8 +246,7 @@
 
 								<a href="/app/journal-entry/{{ row.voucher_no }}" target="_blank">{{ row.voucher_no }}</a> 
 								<span style="font-size:9px;">
-									<br>{{ _("Remarks") }}:<br>
-										{{ row.remarks | replace("\n","<br>") }}
+									
 								</span>
                 {% endif %}
 								

@@ -8,7 +8,6 @@
  "doctype": "Report",
  "filters": [
   {
-   "default": "Today",
    "fieldname": "Start_date",
    "fieldtype": "Date",
    "label": "From Date",
@@ -16,7 +15,6 @@
    "wildcard_filter": 0
   },
   {
-   "default": "Today",
    "fieldname": "End_date",
    "fieldtype": "Date",
    "label": "To Date",
@@ -27,13 +25,13 @@
  "idx": 0,
  "is_standard": "Yes",
  "letter_head": "logo",
- "modified": "2025-03-11 16:25:37.191959",
+ "modified": "2026-05-12 09:29:55.716668",
  "modified_by": "Administrator",
  "module": "HIS",
  "name": "services Report",
  "owner": "Administrator",
  "prepared_report": 0,
- "query": "SELECT \n S.patient AS \"Patient:Data:100\", \n    S.patient_name AS \"Patient Name:Data:250\", \n    S.posting_date AS \"Date:Date:150\", \n    COALESCE(S.ref_practitioner, S.oustside) AS \"Doctor:Data:200\", \n    I.item_code AS \"Service Name:Data:250\", \n    I.Item_group AS \"Service Type\", \n    I.qty AS Qty\nFROM \n    `tabSales Invoice` S\nJOIN \n    `tabSales Invoice Item` I ON S.name = I.parent\nWHERE \n    S.docstatus = 1\n    AND S.posting_date BETWEEN %(Start_date)s AND %(End_date)s\n    AND I.Item_group IN (\"Services\")\n",
+ "query": "SELECT \r\n    S.patient AS \"Patient:Data:100\", \r\n    P.patient_name AS \"Patient Name:Data:250\", \r\n    P.mobile_no AS \"Mobile No:Data:150\",\r\n    P.p_age as \"Age\",\r\n    P.age_type as \"Age Type\",\r\n    S.posting_date AS \"Date:Date:150\", \r\n    COALESCE(S.ref_practitioner, S.oustside) AS \"Doctor:Data:200\", \r\n    I.item_code AS \"Service Name:Data:250\", \r\n    I.item_group AS \"Service Type\", \r\n     I.description AS \"Description\", \r\n    I.income_account AS \"Income\", \r\n    I.qty AS \"Qty:Float:100\",\r\n    I.net_rate AS \"Net Rate:Currency:120\",\r\n    I.net_amount AS \"Net Amount:Currency:150\"\r\nFROM \r\n    `tabSales Invoice` S\r\nJOIN \r\n    `tabSales Invoice Item` I ON S.name = I.parent\r\nLEFT JOIN\r\n    `tabPatient` P ON S.patient = P.name\r\nWHERE \r\n    S.docstatus = 1\r\n    AND S.posting_date BETWEEN %(Start_date)s AND %(End_date)s;",
  "ref_doctype": "Sales Invoice",
  "report_name": "services Report",
  "report_type": "Query Report",

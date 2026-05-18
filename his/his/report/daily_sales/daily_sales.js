@@ -69,15 +69,33 @@ frappe.query_reports["Daily Sales"] = {
         }
     ],
 
+    get_chart_data: function(columns, result) {
+        if (!result || !result.length) {
+            return null;
+        }
+
+        return {
+            data: {
+                labels: result.map(row => row.posting_date),
+                datasets: [
+                    {
+                        name: __("Net Total"),
+                        values: result.map(row => row.net_total || 0)
+                    }
+                ]
+            },
+            type: "bar",
+            height: 300
+        };
+    },
+
     onload: function(report) {
-        cleanup_daily_sales_dom(report);  // Remove OPD-related sections if any
-        // Add any other onload logic here, like adding dimensions
-        erpnext.utils.add_dimensions('Sales Register', 7);
+        cleanup_daily_sales_dom(report);
+        erpnext.utils.add_dimensions("Sales Register", 7);
     },
 
     refresh: function(report) {
-        cleanup_daily_sales_dom(report);  // Cleanup before refreshing the report
-        // You can add other refresh logic here if needed
+        cleanup_daily_sales_dom(report);
     },
 
     after_datatable_render: function(report) {
@@ -90,11 +108,9 @@ function cleanup_daily_sales_dom(report) {
     const wrapper = get_safe_wrapper(report);
     if (!wrapper) return;
 
-     // Remove any section specific to OPD or previous report
     wrapper.querySelector("#doctor-sales-extra-pie-section")?.remove();
-    wrapper.querySelector("#opd-extra-pie-section")?.remove();  // Prevent lingering OPD section
+    wrapper.querySelector("#opd-extra-pie-section")?.remove();
     wrapper.querySelector("#ipd-extra-chart-section")?.remove();
-    // Remove any other sections that should not be carried over
 }
 
 // Helper function to get the wrapper for the report's DOM

@@ -490,6 +490,8 @@ def get_report_content_2( company, supplier_name, account  = None,from_date=None
         "from_date": from_date,
         "to_date": to_date,
         "group_by": "Group by Voucher (Consolidated)",
+        "show_opening_entries": 1
+
     }
     if  account:
        report_gl_filters['account'] = [account]
@@ -585,6 +587,7 @@ def get_report_content_3(company, employee_name,account  = None, from_date=None,
         "from_date": from_date,
         "to_date": to_date,
         "group_by": "Group by Voucher (Consolidated)",
+        "show_opening_entries": 1
     }
     if  account:
        report_gl_filters['account'] = [account]
@@ -898,6 +901,7 @@ def account_statement( company, account ,cost_center = None, from_date=None, to_
         "from_date": from_date,
         "to_date": to_date,
         "group_by": "Group by Voucher (Consolidated)",
+        "show_opening_entries": 1
     }
  
     columns_gl, data_gl = report_gl.get_data(

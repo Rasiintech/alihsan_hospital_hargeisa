@@ -17,6 +17,7 @@
   "mobile",
   "date",
   "doctor",
+  "other_description",
   "drugs_used_anaesthesis_drugs_and_iv_fluids_section",
   "drug",
   "supplies_used_sutures_gloves_cathelers_tubes_and_etc_section",
@@ -106,11 +107,16 @@
    "fieldtype": "Data",
    "label": "Mobile",
    "read_only": 1
+  },
+  {
+   "fieldname": "other_description",
+   "fieldtype": "Small Text",
+   "label": "Other Description"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-07 06:55:28.783899",
+ "modified": "2026-05-16 08:54:32.201676",
  "modified_by": "Administrator",
  "module": "HIS",
  "name": "OT Form",

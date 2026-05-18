@@ -29,6 +29,7 @@
   "employee_name",
   "employee_designation",
   "date",
+  "time",
   "user",
   "doner",
   "sample",
@@ -459,12 +460,18 @@
    "fieldtype": "Text",
    "label": "Collection Details",
    "read_only": 1
+  },
+  {
+   "fieldname": "time",
+   "fieldtype": "Time",
+   "label": "Time",
+   "read_only": 1
   }
  ],
  "in_create": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-05 17:08:51.617557",
+ "modified": "2026-04-27 15:21:30.095735",
  "modified_by": "Administrator",
  "module": "HIS",
  "name": "Lab Result",

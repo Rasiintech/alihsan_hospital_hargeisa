@@ -62,31 +62,47 @@ frappe.query_reports["Doctor Sales"] = {
             "label": __("Item Group"),
             "fieldtype": "Link",
             "options": "Item Group"
-        },
+        }
     ],
 
-    "onload": function(report) {
-        cleanup_doctor_sales_dom(report);  // Cleanup DOM when report is loaded
+    get_chart_data: function(columns, result) {
+        if (!result || !result.length) {
+            return null;
+        }
 
-        // Any additional setup for the report
+        return {
+            data: {
+                labels: result.map(row => row.ref_practitioner || __("No Doctor")),
+                datasets: [
+                    {
+                        name: __("Net Total"),
+                        values: result.map(row => row.net_total || 0)
+                    }
+                ]
+            },
+            type: "bar",
+            height: 300
+        };
+    },
+
+    "onload": function(report) {
+        cleanup_doctor_sales_dom(report);
+
         const btn = report.get_filter("refresh_data");
         if (btn && btn.$input) {
             btn.$input.off("click").on("click", function() {
-                cleanup_doctor_sales_dom(report); // Cleanup when refresh button is clicked
+                cleanup_doctor_sales_dom(report);
                 report.refresh();
             });
         }
     },
 
     "refresh": function(report) {
-        cleanup_doctor_sales_dom(report);  // Cleanup before refreshing the report
-        // Perform the actual refresh
-        // Add any additional steps needed for refresh
+        cleanup_doctor_sales_dom(report);
     },
 
     "after_datatable_render": function(report) {
         if (!is_correct_report(report, "Doctor Sales")) return;
-        // Additional actions after data is rendered, like charts or other UI enhancements
     }
 };
 
@@ -95,11 +111,9 @@ function cleanup_doctor_sales_dom(report) {
     const wrapper = get_safe_wrapper(report);
     if (!wrapper) return;
 
-    // Remove any section specific to OPD or previous report
     wrapper.querySelector("#doctor-sales-extra-pie-section")?.remove();
-    wrapper.querySelector("#opd-extra-pie-section")?.remove();  // Prevent lingering OPD section
+    wrapper.querySelector("#opd-extra-pie-section")?.remove();
     wrapper.querySelector("#ipd-extra-chart-section")?.remove();
-    // Remove any other sections that should not be carried over
 }
 
 // Ensuring the correct report is loaded
