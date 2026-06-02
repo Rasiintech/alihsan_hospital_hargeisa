@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_events_in_timeline": 1,
  "allow_import": 1,
  "allow_rename": 1,
  "autoname": "QUE-.#####",
@@ -22,6 +23,7 @@
   "refered_by",
   "refered_from",
   "phone",
+  "comments",
   "column_break_dtetj",
   "practitioner",
   "practitioner_name",
@@ -33,8 +35,8 @@
   "total_amount",
   "is_membership",
   "discount_level",
-  "discount",
   "mode_of_payment",
+  "discount",
   "paid_amount",
   "is_free",
   "bill_to_employee",
@@ -275,6 +277,7 @@
    "fieldname": "practitioner",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Practitioner",
    "options": "Healthcare Practitioner",
    "reqd": 1
@@ -284,6 +287,7 @@
    "fieldname": "token_no",
    "fieldtype": "Int",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Token No",
    "read_only": 1
   },
@@ -438,7 +442,13 @@
    "fieldname": "mode_of_payment",
    "fieldtype": "Link",
    "label": "Mode of Payment",
-   "options": "Mode of Payment"
+   "options": "Mode of Payment",
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "comments",
+   "fieldtype": "Data",
+   "label": "Comments"
   }
  ],
  "hide_toolbar": 1,
@@ -455,7 +465,7 @@
    "link_fieldname": "patient"
   }
  ],
- "modified": "2026-05-02 09:19:26.261391",
+ "modified": "2026-05-30 09:35:27.486388",
  "modified_by": "Administrator",
  "module": "HIS",
  "name": "Que",

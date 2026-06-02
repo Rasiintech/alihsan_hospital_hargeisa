@@ -72,24 +72,7 @@ IPD = Class.extend(
 		let new_data_ad_s = []
 		tbldata.forEach(row => {
 			let btnhml = ''
-			if(!row.sales_invoice){
-				btnhml += `
-				<button class='btn btn-warning ml-2' style='color:white' onclick = "make_payment('${row.name}','${row.patient }', '${row.admission_practitioner}' )"> Make Payment</button>
-				`
-			}
-
-			if (row.sales_invoice) {
-				frappe.db.get_value("Sales Invoice", row.sales_invoice, "docstatus")
-					.then(r => {
-						// console.log(r.message.docstatus)
-						if (r.message && r.message.docstatus != 1) {
-							btnhml += `
-							<button class='btn btn-warning ml-2' style='color:white' onclick = "make_payment('${row.name}','${row.patient }', '${row.admission_practitioner}' )"> Make Payment</button>
-							`
-						}
-					});
-			}
-			
+					
 			btnhml += `
 			<button class='btn btn-primary ml-2' onclick = "admit('${row.name}','${row.patient }', '${row.admission_practitioner }')"> Admit</button>
 			<button class='btn btn-danger ml-2' onclick = "cancel_admision('${row.name}','${row.patient }')"> Cancel</button>
@@ -187,17 +170,56 @@ function admit(inpatient_record, patient, practitioner, type){
 	let d = new frappe.ui.Dialog({
 		title: 'Enter details',
 		fields: [
-			{fieldtype: 'Link', label: 'Type', fieldname: 'type', options: 'Inpatient Type',reqd: 1 , default: type},
-			{fieldtype: 'Link', label: 'Room', fieldname: 'room', options: 'Healthcare Service Unit Type',reqd: 1},
-			{fieldtype: 'Link', label: 'Bed', fieldname: 'bed', options: 'Healthcare Service Unit', reqd: 1},
+			{fieldtype: 'Currency', label: 'Rate', fieldname: 'rate'},
+			{fieldtype: 'Link', label: 'Type', fieldname: 'type', options: 'Inpatient Type',reqd: 1 , default: "IPD"},
+			{fieldtype: 'Link', label: 'Room', fieldname: 'room', options: 'Healthcare Service Unit Type',reqd: 1,
+		
+			},
+			
+			{fieldtype: 'Link', label: 'Bed', fieldname: 'bed', options: 'Healthcare Service Unit', reqd: 1,
+			onchange: function() {
+				let room = d.fields_dict['room'].get_value();
+				if (room) {
+					frappe.db.get_value('Healthcare Service Unit Type', room, 'rate')
+						.then(r => {
+							d.set_value('bed_amount', r.message.rate || 0);
+							d.set_value('paid_amount', r.message.rate || 0);
+						});
+				} else {
+					d.set_value('bed_amount', 0);
+					d.set_value('paid_amount', 0);
+				}
+			}
+			},
+			{fieldtype: 'Currency', label: 'Amount', fieldname: 'bed_amount',read_only: 1, depends_on: 'eval:doc.bed'  },
+			
+			{fieldtype: 'Currency', label: 'Discount Amount', fieldname: 'discount',read_only: 0,  depends_on: 'eval:doc.bed',
+				 onchange: function() {
+					let amount = d.get_value('bed_amount') || 0;
+					let discount = d.get_value('discount') || 0;
+					d.set_value('paid_amount', amount - discount);
+				}
+			},
+			{fieldtype: 'Currency', label: 'Paid Amount', fieldname: 'paid_amount',read_only: 0,  depends_on: 'eval:doc.bed'},
 			{fieldtype: 'Link', label: 'Additional Bed', fieldname: 'bed2', options: 'Healthcare Service Unit', reqd: 0, "hidden": 1},
-			{fieldtype: 'Datetime', label: 'Check In', fieldname: 'check_in', reqd: 1, default: frappe.datetime.now_datetime()}
-			   
+			{fieldtype: 'Datetime', label: 'Check In', fieldname: 'check_in', reqd: 1, default: frappe.datetime.now_datetime()},
+			{ fieldtype: 'Check', label: 'Bill to Insurance', fieldname: 'is_insurance', reqd: 0,
+			
+			},  
+			{ fieldtype: 'Link', label: 'Insurance', fieldname: 'insurance', reqd: 0, options: "Customer", depends_on: "eval:(doc.is_insurance == 1)", mandatory_depends_on:  "eval:(doc.is_insurance == 1)",
+				get_query: function() {
+				return {
+					query: "his.api.dp_drug_pr_link_query.insurance",  // Custom query method
+				};
+			}, 
+			},
+			{fieldtype: 'Data', label: 'Comments', fieldname: 'comment',read_only: 0},
 	
 		],
 		primary_action_label: 'Submit',
 		primary_action(values) {
-			admit_p(inpatient_record ,values.bed , patient, practitioner, values.type )
+			admit_p(inpatient_record ,values.bed , values.amount, values.discount, values.paid_amount, patient, values.is_insurance, values.insurance, practitioner, values.type , values.comment)
+			// function admit_p(inpatient_record, bed, amount, discount, paid_amount,  patient_name, is_insurance, insurance, practitioner) {
 			// alert("ok")
 				// console.log(values.room)
 			//    frappe.route_options = {'room': values.room , "type" : values.type  , "inp_doc" : inpatient_record  , "patient" : patient };
@@ -205,14 +227,21 @@ function admit(inpatient_record, patient, practitioner, type){
 			d.hide();
 		}
 	});
-		d.fields_dict['room'].get_query = function(){
-		return {
-			filters: {
+		d.fields_dict['room'].get_query = function() {
+			let rate = d.get_value('rate');
+
+			let filters = {
 				'inpatient_occupancy': 1,
-				'Type':"IPD"
+				'Type': "IPD"
+			};
+
+			// Add rate filter only if a value is entered
+			if (rate) {
+				filters.rate = rate;
 			}
+
+			return { filters: filters };
 		};
-	};
 
 	d.fields_dict['bed'].get_query = function(){
 		return {
@@ -227,29 +256,39 @@ function admit(inpatient_record, patient, practitioner, type){
 	d.show();
 }
 
-function admit_p(inpatient_record, bed,patient_name, practitioner, type){
+function admit_p(inpatient_record, bed, amount, discount, paid_amount,  patient_name, is_insurance, insurance, practitioner,type, comment) {
 	frappe.call({
-			
 		method: 'his.api.admit.admit_p',
-		args:{
-			
-			"inp_doc" :inpatient_record,
+		args: {
+			"inp_doc": inpatient_record,
 			'service_unit': bed,
-			"patient":patient_name,
-			"practitioner":practitioner,
-			'type' : type
-			
-			// "is_insurance" : data.ref_insturance
-			// 'check_in': Date(),
-			// 'expected_discharge': expected_discharge
+			"patient": patient_name,
+			"amount": amount,
+			"paid_amount": paid_amount,
+			"discount": discount,
+			"is_insurance": is_insurance,
+			"insurance": insurance,
+			"comment": comment
 		},
-		callback: function(data) {
-			frappe.msgprint("Admited")
-			window.location.reload();
+		callback: function (data) {
+			frappe.utils.play_sound("submit");
 
+			frappe.show_alert({
+				message: __('You have Admitted Patient Successfully'),
+				indicator: 'green',
+			}, 5);
+
+			// Get the Sales Invoice name from the backend response
+			let sales_invoice_name = data.message;
+
+			// Call the print function with the Sales Invoice name
+			frappe.utils.print("Sales Invoice", sales_invoice_name, "Sales Inv", "logo");
+			console.log(sales_invoice_name)
+
+			// Optionally, navigate to the Sales Invoice form page
+			// frappe.set_route('Form', 'Sales Invoice', sales_invoice_name);
 		}
-	})
-
+	});
 }
 
 	
@@ -364,107 +403,3 @@ function add_inpatient(){
 } 
 
 
-function make_payment(inpatient_record, patient, practitioner){
-	
-    	let d = new frappe.ui.Dialog({
-		title: 'Enter details',
-		fields: [
-			{
-	fieldtype: 'Link',
-	label: 'Room',
-	fieldname: 'room',
-	options: 'Healthcare Service Unit Type',
-	reqd: 1,
-	change: function () {
-		let room = d.get_value('room');
-
-				if (room) {
-					frappe.db.get_value(
-						'Healthcare Service Unit Type',
-						room,
-						['item', 'rate']
-					).then(r => {
-						if (r.message) {
-							d.set_value('item_code', r.message.item || '');
-							d.set_value('rate', r.message.rate || 0);
-						}
-					});
-				}
-			}
-		},
-			{fieldtype: 'Link', label: 'Item', fieldname: 'item_code', options: 'Item',  fetch_from : "room.item",  read_only: 1},
-			{fieldtype: 'Link', label: 'Rate', fieldname: 'rate', fetch_from : "room.rate",  read_only: 1},
-			{fieldtype: 'Link', label: 'Bed', fieldname: 'bed', options: 'Healthcare Service Unit', reqd: 1},
-			{fieldtype: 'Link', label: 'Additional Bed', fieldname: 'bed2', options: 'Healthcare Service Unit', reqd: 0, "hidden": 1},
-			// {fieldtype: 'Datetime', label: 'Check In', fieldname: 'check_in', reqd: 1, default: frappe.datetime.now_datetime()}
-			   
-	
-		],
-		primary_action_label: 'Make Invoice',
-		primary_action(values) {
-			let company = frappe.defaults.get_default("company");
-
-			frappe.db.get_doc("Item", values.item_code).then(item => {
-				let income_account = "";
-
-				// 1. Check Item Default Income Account
-				if (item.item_defaults && item.item_defaults.length) {
-					let item_default = item.item_defaults.find(d => d.company === company);
-					if (item_default && item_default.income_account) {
-						income_account = item_default.income_account;
-					}
-				}
-
-				// 2. If not found, get Company Default Income Account
-				let income_account_promise = income_account
-					? Promise.resolve(income_account)
-					: frappe.db.get_value("Company", company, "default_income_account")
-						.then(r => r.message.default_income_account || "");
-
-				income_account_promise.then(final_income_account => {
-					frappe.new_doc("Sales Invoice", {
-						patient: patient,
-						ref_practitioner: practitioner,
-						inpatient_admit: inpatient_record,
-						company: company
-					}, function(doc) {
-						doc.items = [];
-
-						let row = frappe.model.add_child(doc, "items");
-						row.item_code = values.item_code;
-						row.item_name = values.item_code;
-						row.uom = "Nos";
-						row.description = values.bed;
-						row.qty = 1;
-						row.rate = values.rate || 0;
-						row.income_account = final_income_account;
-					});
-				});
-			});
-
-			d.hide();
-		}
-	});
-		d.fields_dict['room'].get_query = function(){
-		return {
-			filters: {
-				'inpatient_occupancy': 1,
-				'Type':"IPD"
-			}
-		};
-	};
-
-	d.fields_dict['bed'].get_query = function(){
-		return {
-			filters: {
-				'inpatient_occupancy': 1,
-				'service_unit_type':d.get_value('room'),
-				"occupancy_status": "Vacant"
-			}
-		};
-	};
-	
-	d.show();
-
-
-}
