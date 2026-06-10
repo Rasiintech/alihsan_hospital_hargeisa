@@ -123,7 +123,6 @@
    "default": "Now",
    "fieldname": "time",
    "fieldtype": "Time",
-   "hidden": 1,
    "label": "Time",
    "read_only": 1
   },
@@ -465,7 +464,7 @@
    "link_fieldname": "patient"
   }
  ],
- "modified": "2026-05-30 09:35:27.486388",
+ "modified": "2026-06-10 10:03:14.111903",
  "modified_by": "Administrator",
  "module": "HIS",
  "name": "Que",

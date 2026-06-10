@@ -313,46 +313,53 @@ frappe.listview_settings['Que'] = {
     onload: function(listview) {
         // var filters = [["QUE", "date", "=", frappe.datetime.get_today()]];
         // listview.filter_area.add(filters);
-        if(!frappe.user_roles.includes("Doctordd")){
+    //     if(!frappe.user_roles.includes("Doctordd")){
     
-    listview.page.add_button(__("Stop"), () => table.download("xlsx", "data.xlsx", {sheetName:"My Data"}), {
+    // listview.page.add_button(__("Stop"), () => table.download("xlsx", "data.xlsx", {sheetName:"My Data"}), {
        
-    });
+    // });
    
-        frappe.db.get_value("Healthcare Practitioner" , {"user_id" : frappe.session.user} , ["name" , 'break'])
-        .then(r => {
+//         frappe.db.get_value("Healthcare Practitioner" , {"user_id" : frappe.session.user} , ["name" , 'break'])
+//         .then(r => {
            
-                // cur_page.page.list_view.page.clear_actions()
-                listview.page.add_button(__("Continue"), () => {
-                frappe.db.set_value("Healthcare Practitioner" ,r.message.name, "break" , 0)
-                })
+//                 // cur_page.page.list_view.page.clear_actions()
+//                 listview.page.add_button(__("Continue"), () => {
+//                 frappe.db.set_value("Healthcare Practitioner" ,r.message.name, "break" , 0)
+//                 })
          
-                // cur_page.page.list_view.page.clear_actions()
-                listview.page.add_button(__("Break"), () => {
+//                 // cur_page.page.list_view.page.clear_actions()
+frappe.db.get_value("Healthcare Practitioner", { "user_id": frappe.session.user }, ["name", "break"])
+    .then(r => {
+        const practitioner = r.message.name;
 
-                    frappe.db.set_value("Healthcare Practitioner" ,r.message.name, "break" , 1)
-                  
-                    })
+        listview.page.add_button(__("Que Managment"), () => {
 
-            
-            
+            frappe.db.get_value("Que Managment", { 
+                "practitioner": practitioner, 
+                "date": frappe.datetime.get_today() 
+            }, ["name", "to_no"])
+            .then(res => {
+                if (res.message && res.message.name) {
+                    const docname = res.message.name;
 
-       
-       
-  
+                    frappe.set_route("Form", "Que Managment", docname).then(() => {
+                        cur_frm.set_value("from_no", res.message.to_no+1);
+                        cur_frm.set_value("to_no", res.message.to_no+9);
+                    });
 
-}, {
-       
+                } else {
+                    frappe.new_doc("Que Managment", {
+                        practitioner: practitioner,
+                        date: frappe.datetime.get_today(),
+                        from_no: 1,
+                        
+
+                    });
+                }
+            });
+
+        });
     });
 }
-}
-// }
-    
-}
-
-
    
-
-
-
-// }
+}

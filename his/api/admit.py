@@ -92,6 +92,7 @@ def admit_p(inp_doc, service_unit, amount=0, discount=0, paid_amount=0, patient=
             "items": [{
                 "item_code": room_item.item_code,
                 "description" : service_unit,
+                "bed" : service_unit,
                 "uom": room_item.uom,
                 "rate": room_item.rate,
                 "qty": 1,
@@ -123,6 +124,7 @@ def admit_p(inp_doc, service_unit, amount=0, discount=0, paid_amount=0, patient=
             "items": [{
                 "item_code": room_item.item_code,
                 "description" : service_unit,
+                "bed" : service_unit,
                 "uom": room_item.uom,
                 "rate": room_item.rate,
                 "qty": 1,

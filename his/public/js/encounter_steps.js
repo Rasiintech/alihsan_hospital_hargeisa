@@ -1,6 +1,6 @@
 frappe.ui.form.on('Patient Encounter', {
     after_save: function(frm){
-        window.location.reload();
+        // window.location.reload();
     },
     select_lab_tests: function(frm){
         select_lab_tests(frm)

@@ -210,202 +210,98 @@ frappe.ui.form.on('Patient Encounter', {
 })
 
 let select_lab_tests = function (frm) {
-	var d = new frappe.ui.Dialog({
-		'fields': [
+    var d = new frappe.ui.Dialog({
+        fields: [
+            { fieldname: 'ht', fieldtype: 'HTML' },
+        ],
+        primary_action_label: "Update",
+        primary_action: function () {
+            let selected = [];
+            d.$wrapper.find("input[name='lab']:checked").each(function () {
+                selected.push($(this).val());
+            });
 
-			{ 'fieldname': 'ht', 'fieldtype': 'HTML' },
+            frappe.model.clear_table(cur_frm.doc, "lab_test_prescription");
 
-		],
+            selected.forEach(lab => {
+                let row = frappe.model.add_child(cur_frm.doc, "Lab Prescription", "lab_test_prescription");
+                row.lab_test_code = lab;
+            });
 
-		primary_action: function () {
+            refresh_field("lab_test_prescription");
+            d.hide();
+        }
+    });
 
-			var test = []
-			var labs = []
-			$("input[name='lab']:checked").each(function () {
-				if (!$(this).is(':checked')) {
-					//  console.log($(this))
-				}
+    // ✅ Destroy dialog DOM on close
+    d.$wrapper.on('hidden.bs.modal', function () {
+        d.$wrapper.find('.modal-body').html('');
+        d = null;
+    });
 
-				var selectedlabs = []
-				cur_frm.get_field("lab_test_prescription").grid.grid_rows.forEach(r => selectedlabs.push(r.doc.lab_test_code))
-				if (selectedlabs) {
-					if (!selectedlabs.includes($(this).val())) {
-						labs.push($(this).val())
-						//   var row = frappe.model.add_child(cur_frm.doc, "Lab Prescription", "lab_test_prescription");
-						//     row.lab_test_code = $(this).val()
+    frappe.db.get_list("Lab Test Template", {
+        fields: ["name", "lab_test_name", "department", "profile"],
+        filters: {
+            is_billable: 1,
+            disabled: 0
+        },
+        limit: 500,
+        order_by: "department"
+    }).then((records) => {
 
-						//     refresh_field("lab_test_prescription");
+        // ✅ Always fresh from doc on every open
+        let selectedlabs = (cur_frm.doc.lab_test_prescription || []).map(r => r.lab_test_code);
 
-						// test.push($(this).val());
-					}
-				}
-				else {
-					labs.push($(this).val())
-					//  var row = frappe.model.add_child(cur_frm.doc, "Lab Prescription", "lab_test_prescription");
-					// row.lab_test_code = $(this).val()
+        const groupByDept = records.reduce((group, dep) => {
+            const key = dep.profile ? dep.profile.toUpperCase().trim() : "OTHER";
+            group[key] = group[key] || [];
+            group[key].push(dep);
+            return group;
+        }, {});
 
-					// refresh_field("lab_test_prescription");
-				}
+        let row = "";
+        Object.keys(groupByDept).forEach((key) => {
+            let td = "";
+            groupByDept[key].forEach((test) => {
+                let isSelected = selectedlabs.includes(test.name);
+                td += `
+                    <div class="form-group form-check">
+                        <input type="checkbox"
+                            class="form-check-input"
+                            name="lab"
+                            id="lab_${test.name}"
+                            value="${test.name}"
+                            ${isSelected ? "checked" : ""}
+                        >
+                        <label class="form-check-label" for="lab_${test.name}">
+                            ${test.lab_test_name}
+                            ${isSelected ? '<span style="color: #28a745; font-size: 11px;"> ✓</span>' : ""}
+                        </label>
+                    </div>
+                `;
+            });
 
-			});
-			labs.forEach(lab => {
-				var row = frappe.model.add_child(cur_frm.doc, "Lab Prescription", "lab_test_prescription");
-				row.lab_test_code = lab
-
-				refresh_field("lab_test_prescription");
-			})
-			//   console.log(test)
-			//   test = []
-
-			//   var va = $('input:checked').map(function(i, e) {return e.value}).toArray();
-			//   console.log(va)
-			// //  var va = [];
-			//     $(':checkbox:checked').each(function(i){
-			//         va = []
-			//       va.push($(this).val());
-			//       console.log(va)
-			//     });
-
-			d.hide();
-
-
-		}
-	});
-
-	var td = ''
-
-	// frappe.client.get_list('Lab Test Template', {
-	//      page_length:2,
-	//     fields: ['lab_test_name' , 'department'],
-	//     filters: {
-	//         is_billable: 1,
-
-	//     },
-	// frappe.db.get_list('Lab Test Template', {
-	//     fields: ['lab_test_name' , 'department'],
-	//     filters: {
-	//         is_billable: 1
-	//     },
-	//     limit : 1000
-	// }).then(records => {
-	//      var pr_selectedlabs= []
-	//      cur_frm.get_field("lab_test_prescription").grid.grid_rows.forEach(r => pr_selectedlabs.push(r.doc.lab_test_code))
-
-	//     records.forEach(r =>  { 
-	//          if (pr_selectedlabs.includes(r.lab_test_name)){
-	//               td += `${r.lab_test_name}  <input type="checkbox" class="lab" name="lab" value="${r.lab_test_name}" checked>`
-	//          }
-	//          else{
-	//                td += `${r.lab_test_name}  <input type="checkbox" class="lab" name="lab" value="${r.lab_test_name}">`
-	//          }
-
-	//         var htm = td
-	//         d.fields_dict.ht.$wrapper.html(htm);
-	//     })
-	// })
-
-	var td = "";
-	frappe.db
-		.get_list("Lab Test Template", {
-			fields: ["lab_test_name", "department", "profile"],
-			filters: {
-				is_billable: 1,
-				disabled: 0
-			},
-			limit: 500,
-			order_by: "department"
-		})
-		.then((records) => {
-			records.forEach((r) => {
-				// 	td += ` <span class ="text-primary h4" >${r.lab_test_name}  <input type="checkbox" class="lab" name="lab" value="${r.lab_test_name}"></span>`
-
-				// 		   var htm = td
-				// 		   var row= `<div class="container">
-				// 	 <div class="row">
-				// 	   <div class="col-sm-6">
-				// 		${td}
-				// 	   </div>
-
-				// 	 </div>
-				//    </div>`
-
-				const re_arr = [records];
-				let row = ``;
-				const groupByDept = records.reduce((group, dep) => {
-					// console.log(group)
-					const { profile } = dep;
-					if (profile) {
-						group[profile.toUpperCase().trim()] = group[profile.toUpperCase().trim()] || [];
-						group[profile.toUpperCase().trim()].push(dep);
-					}
-					else {
-						group[profile] = group[profile] || [];
-						group[profile].push(dep);
-
-					}
-
-					return group;
-				}, {});
-				//   console.log(groupByDept);
-				var pr_selectedlabs = []
-				frm.get_field("lab_test_prescription").grid.grid_rows.forEach(r => pr_selectedlabs.push(r.doc.lab_test_code))
-
-				Object.keys(groupByDept).forEach((key) => {
-					// console.log(key, groupByDept[key]);
-					let td = ``;
-					groupByDept[key].forEach((test) => {
-						if (pr_selectedlabs.includes(test.lab_test_name)) {
-							td += `
-      
-      <div class="form-group form-check">
-      
-          <input type="checkbox"  class="form-check-input" name = "lab" id="${test.lab_test_name}"  value="${test.lab_test_name}" checked>
-          <label class="form-check-label" >${test.lab_test_name}</label>
-          
-      </div>
-      `;
-						}
-						else {
-							td += `
-      
-            <div class="form-group form-check">
-            
-                <input type="checkbox"  class="form-check-input" name = "lab" id="${test.lab_test_name}"  value="${test.lab_test_name}">
-                <label class="form-check-label" >${test.lab_test_name}</label>
-                
-            </div>
+            row += `
+                <div class="col-md-2" style="border: 1px solid #000; margin: 5px;">
+                    <h4><strong>${key}</strong></h4>
+                    <div>${td}</div>
+                </div>
             `;
+        });
 
-						}
-					});
-					row += `
-      
-      <div class = "col-md-2" id = "${key}" style = "border: 1px solid #000 ; margin: 5px">
-          <h4> <strong> ${key}  </strong> </h4>
-		  <div >
-          ${td}
-		  </div>
-          
-      </div>
-      `;
-				});
-				var continaer = `<div class="container">
-<div class="row">
+        let container = `
+            <div class="container">
+                <div class="row">${row}</div>
+            </div>
+        `;
 
- ${row}
-
-
-
-</div>
-</div>`;
-				d.fields_dict.ht.$wrapper.html(continaer);
-				d.$wrapper.find(".modal-dialog").css("max-width", "100%", "width", "100%");
-
-				d.show();
-				// d.$wrapper.find('.modal-content').css("width", "800px");
-			})
-		})
-}
+        // ✅ Clear first then set fresh HTML
+        d.fields_dict.ht.$wrapper.html('');
+        d.fields_dict.ht.$wrapper.html(container);
+        d.$wrapper.find(".modal-dialog").css("max-width", "100%");
+        d.show();
+    });
+};
 
 
 let select_imaging = function (frm) {
